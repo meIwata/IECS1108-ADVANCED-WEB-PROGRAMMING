@@ -1,0 +1,82 @@
+<html>
+
+<head>
+  <title>Express</title>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+</head>
+
+<body>
+  <h1>電影台詞列表</h1>
+  <div id="app">
+    <form @submit.prevent="insert">
+      <label>
+        提供者：<input v-model="form.provider" required>
+      </label>
+      <label>
+        電影名稱：<input v-model="form.movie_name" required>
+      </label>
+      <label>
+        電影台詞：<input v-model="form.quote" required>
+      </label>
+      <button type="submit">新增台詞</button>
+    </form>
+    <button @click="fetchQuotes">顯示資料</button>
+    <table v-if="quotes.length">
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>provider</th>
+          <th>movie_name</th>
+          <th>quote</th>
+          <th>vote_count</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="q in quotes" :key="q.id">
+          <td>{{ q.id }}</td>
+          <td>{{ q.provider }}</td>
+          <td>{{ q.movie_name }}</td>
+          <td>{{ q.quote }}</td>
+          <td>{{ q.vote_count }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <script>
+    const { createApp } = Vue;
+    createApp({
+      data() {
+        return {
+          quotes: [],
+          form: {
+            provider: '',
+            movie_name: '',
+            quote: ''
+          }
+        }
+      },
+      methods: {
+        async fetchQuotes() {
+          const res = await fetch('/api/quotes');
+          this.quotes = await res.json();
+        },
+        async insert() {
+          const res = await fetch('/api/insert', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(this.form)
+          });
+          const msg = await res.text();
+          alert(msg);
+          this.form.provider = '';
+          this.form.movie_name = '';
+          this.form.quote = '';
+          await this.fetchQuotes();
+        }
+      }
+    }).mount('#app');
+  </script>
+</body>
+
+</html>

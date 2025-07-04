@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shopping List</title>
+</head>
+<body>
+    <div id="app">
+        <form @submit.prevent="addItem">
+            <input v-model="itemName" placeholder="物品名稱" required>
+            <input v-model.number="itemQty" type="number" min="1" placeholder="物品數量" required>
+            <button type="submit">新增到購物清單</button>
+        </form>
+        <ul>
+            <li v-for="(item, idx) in shoppingList" :key="idx">
+                {{ item.name }}，{{ item.qty }}
+            </li>
+        </ul>
+    </div>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+      const { createApp } = Vue;
+      createApp({
+        data() {
+          return {
+            itemName: '',
+            itemQty: '',
+            shoppingList: []
+          }
+        },
+        methods: {
+          addItem() {
+            if (this.itemName && this.itemQty > 0) {
+              this.shoppingList.push({ name: this.itemName, qty: this.itemQty });
+              this.itemName = '';
+              this.itemQty = '';
+            }
+          }
+        }
+      }).mount('#app');
+    </script>
+</body>
+</html>
